@@ -126,3 +126,7 @@ dmypy.json
 
 release/
 
+
+.idea/
+
+.DS_Store

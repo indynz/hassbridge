@@ -81,14 +81,13 @@ class Plugin(indigo.PluginBase):
     ######################
 
     def __init__(self, plugin_id, display_name, version, prefs):
-        indigo.PluginBase.__init__(self, plugin_id, display_name, version,
-                                   prefs)
+        indigo.PluginBase.__init__(self, plugin_id, display_name, version, prefs)
 
-        self.debug = prefs.get(u'showDebugInfo', False)
+        self.debug = prefs.get('showDebugInfo', False)
         if self.debug:
-            self.logger.debug(u'Log debugging enabled')
+            self.logger.debug('Log debugging enabled')
         else:
-            self.logger.debug(u'Log debugging disabled')
+            self.logger.debug('Log debugging disabled')
 
         self.config = Config(prefs, self.logger)
 
@@ -112,7 +111,7 @@ class Plugin(indigo.PluginBase):
     # pylint: disable=unused-argument
     def handle_exception(self, exc_type, exc_value, exc_traceback):
         """General exception handler"""
-        self.logger.error(u'Exception trapped:' + unicode(exc_value))
+        self.logger.error('Exception trapped:' + str(exc_value))
 
     ####
     # Preferences Support
@@ -253,7 +252,7 @@ class Plugin(indigo.PluginBase):
     def on_mqtt_connect(self, client, userdata, flags, rc):
         try:
             self.logger.debug(
-                u'Connected to MQTT server with result code ' + unicode(rc))
+                u'Connected to MQTT server with result code ' + str(rc))
             if rc == 0:
                 self.mqtt_connected = True
                 self._register_ha_devices()
@@ -275,7 +274,7 @@ class Plugin(indigo.PluginBase):
     def _disconnect_from_mqtt_broker(self):
         if self.mqtt_connected:
             self.logger.debug(u'Disconnecting from MQTT Broker')
-            for _, ha_device in self._ha_devices.iteritems():
+            for _, ha_device in self._ha_devices.items():
                 if ha_device.indigo_entity is not None \
                         and isinstance(ha_device, RegisterableDevice):
                     ha_device.shutdown()
@@ -291,7 +290,7 @@ class Plugin(indigo.PluginBase):
     def on_mqtt_message(self, client, userdata, msg):
         try:
             self.logger.warn(
-                u'Unhandled Message recd: ' + msg.topic + " | " + unicode(
+                u'Unhandled Message recd: ' + msg.topic + " | " + str(
                     msg.payload))
         except Exception:  # pylint: disable=broad-except
             t, v, tb = sys.exc_info()
@@ -314,7 +313,7 @@ class Plugin(indigo.PluginBase):
             raise
 
     def _check_timed_updates(self):
-        for _, ha_device in self._ha_devices.iteritems():
+        for _, ha_device in self._ha_devices.items():
             if isinstance(ha_device, TimedUpdateCheck):
                 ha_device.check_for_update()
 
@@ -374,7 +373,7 @@ class Plugin(indigo.PluginBase):
                     indigo_device, self.config, self.logger)
 
                 # Go through HA devices
-                for _, ha_device in hass_devices.iteritems():
+                for _, ha_device in hass_devices.items():
                     # setup the followers list
                     if str(indigo_device.id) not in \
                             new_device_followers_map and \
@@ -418,7 +417,7 @@ class Plugin(indigo.PluginBase):
                     indigo_variable, self.config, self.logger)
 
                 # Go through HA devices
-                for _, ha_device in hass_devices.iteritems():
+                for _, ha_device in hass_devices.items():
                     # setup the followers list
                     if str(indigo_variable.id) not in \
                             new_device_followers_map and \
@@ -522,7 +521,7 @@ class Plugin(indigo.PluginBase):
             ha_device.cleanup()
 
     def _register_ha_devices(self):
-        for _, ha_device in self._ha_devices.iteritems():
+        for _, ha_device in self._ha_devices.items():
             self._register_ha_device(ha_device)
 
 

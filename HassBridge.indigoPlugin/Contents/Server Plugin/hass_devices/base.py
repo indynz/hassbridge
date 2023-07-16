@@ -56,16 +56,16 @@ class Base(object):
     def _overrideable_get(self, key, default, section=CONFIG_VARS_SECTION):
         ret = None
         if default is not None:
-            ret = unicode(default).format(d=self)
+            ret = str(default).format(d=self)
 
         if section is self.MAIN_CONFIG_SECTION \
                 and key in self.overrides \
                 and self.overrides[key]:
-            ret = unicode(self.overrides[key]).format(d=self)
+            ret = str(self.overrides[key]).format(d=self)
         elif section in self.overrides \
                 and key in self.overrides[section] \
                 and self.overrides[section][key]:
-            ret = unicode(self.overrides[section][key]).format(d=self)
+            ret = str(self.overrides[section][key]).format(d=self)
         return ret
 
     @property

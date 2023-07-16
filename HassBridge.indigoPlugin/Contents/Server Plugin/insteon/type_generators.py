@@ -147,7 +147,7 @@ class InsteonKeypadTypesGenerator(object):
             else:
                 button_map = INSTEON_KEYPAD_8_BUTTON_MAP
 
-            for button_id, button_label in button_map.iteritems():
+            for button_id, button_label in button_map.items():
                 device = InsteonKeypadButtonLight(dev, config.customizations,
                                                   logger,
                                                   config.hass_discovery_prefix,
@@ -156,7 +156,7 @@ class InsteonKeypadTypesGenerator(object):
                 devices[device.id] = device
 
                 # Setup the device activty trackers for the buttons
-                for _, activity_type in INSTEON_EVENTS.iteritems():
+                for _, activity_type in INSTEON_EVENTS.items():
                     button_activity_device = InsteonButtonActivityTracker(
                         dev,
                         config.customizations,
@@ -214,13 +214,13 @@ class InsteonRemoteTypesGenerator(object):
 
         if dev.model in INSTEON_REMOTE_MODELS:
             button_map = INSTEON_REMOTE_MODELS[dev.model]
-            for button_id, button_label in button_map.iteritems():
+            for button_id, button_label in button_map.items():
                 device = InsteonRemote(dev, overrides, logger, button_id,
                                        button_label)
                 devices[device.id] = device
 
                 # Setup the device activty trackers for the buttons
-                for _, activity_type in INSTEON_EVENTS.iteritems():
+                for _, activity_type in INSTEON_EVENTS.items():
                     button_activity_device = InsteonButtonActivityTracker(
                         dev,
                         config.customizations,

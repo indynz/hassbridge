@@ -110,7 +110,7 @@ class Fan(BaseCommandableHADevice):
     def __send_percentage_state(self, dev):
         get_mqtt_client().publish(
             topic=self.percentage_state_topic,
-            payload=unicode(dev.speedIndex),
+            payload=str(dev.speedIndex),
             retain=self.percentage_state_topic_retain)
 
     def cleanup(self):

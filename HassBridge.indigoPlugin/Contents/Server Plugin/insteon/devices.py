@@ -344,7 +344,7 @@ class InsteonLedBacklight(Light, InsteonGeneralCommandProcessor):
                                   self.brightness_state_topic))
         get_mqtt_client().publish(
             topic=self.brightness_state_topic,
-            payload=unicode(self.brightness_level),
+            payload=str(self.brightness_level),
             retain=self.brightness_command_topic_retain)
 
     # pylint: disable=unused-argument
