@@ -84,7 +84,7 @@
     </Field>
     <Field id="devices" type="list" rows="10" visibleBindingValue="false">
         <Label>Devices:</Label>
-        <List class="self" filter="stuff" method="bridgable_devices_list_generator"/>
+        <List class="self" filter="stuff" method="bridgeable_devices_list_generator"/>
     </Field>
 
     <Field id="create_battery_sensors" type="checkbox" defaultValue="false">

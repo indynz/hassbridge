@@ -137,10 +137,9 @@ class Plugin(indigo.PluginBase):
         self._register_ha_devices()
 
     # pylint: disable=unused-argument, redefined-builtin
-    def bridgable_devices_list_generator(self, filter="", valuesDict=None,
-                                         typeId="", targetId=0):
-        """List genertor for config shows the list of bridgeable devices."""
-        self.logger.debug(u'Getting list of Bridgable Devices')
+    def bridgeable_devices_list_generator(self, filter="", valuesDict=None, typeId="", targetId=0):
+        """List generator for config shows the list of bridgeable devices."""
+        self.logger.debug('Getting list of Bridgeable Devices')
         return_list = list()
         for dev in indigo.devices:
             if DeviceGeneratorFactory.is_bridgeable(dev):
@@ -156,7 +155,7 @@ class Plugin(indigo.PluginBase):
             self._update_perfs(values_dict)
 
     def runConcurrentThread(self):
-        self.logger.debug(u'Starting Concurrent Thread')
+        self.logger.debug('Starting Concurrent Thread')
         while True:
             if self._started:
                 if not self.mqtt_connected:
@@ -195,7 +194,7 @@ class Plugin(indigo.PluginBase):
         self._register_ha_devices()
 
     def startup(self):
-        self.logger.debug(u'startup called')
+        self.logger.debug('startup called')
 
         # initial setup of ha devices
         self._setup_ha_devices()
@@ -207,14 +206,14 @@ class Plugin(indigo.PluginBase):
         indigo.devices.subscribeToChanges()
         indigo.variables.subscribeToChanges()
 
-        self.logger.debug(u'subscribing to all INSTEON commands')
+        self.logger.debug('subscribing to all INSTEON commands')
         if indigo.insteon.isEnabled():
             indigo.insteon.subscribeToIncoming()
 
         self._started = True
 
     def shutdown(self):
-        self.logger.debug(u'shutdown called')
+        self.logger.debug('shutdown called')
         self._disconnect_from_mqtt_broker()
         self._started = False
 
@@ -228,20 +227,17 @@ class Plugin(indigo.PluginBase):
     def _connect_to_mqtt_broker(self):
         try:
             self._disconnect_from_mqtt_broker()
-            self.logger.info(u'Connecting to the MQTT Server...')
-            self.mqtt_client.username_pw_set(username=self.config.mqtt_username,
-                                             password=self.config.mqtt_password)
-            self.mqtt_client.connect(self.config.mqtt_server,
-                                     self.config.mqtt_port, 59)
-            self.logger.info(u'Connected to MQTT Server!')
+            self.logger.info('Connecting to the MQTT Server...')
+            self.mqtt_client.username_pw_set(username=self.config.mqtt_username, password=self.config.mqtt_password)
+            self.mqtt_client.connect(self.config.mqtt_server, self.config.mqtt_port, 59)
+            self.logger.info('Connected to MQTT Server!')
             self.mqtt_client.loop_start()
         except Exception:    # pylint: disable=broad-except
             t, v, tb = sys.exc_info()
             if v.errno == 61:
-                self.logger.critical(
-                    u'Connection Refused when connecting to broker.')
+                self.logger.critical('Connection Refused when connecting to broker.')
             elif v.errno == 60:
-                self.logger.error(u'Timeout when connecting to broker.')
+                self.logger.error('Timeout when connecting to broker.')
             else:
                 self.handle_exception(t, v, tb)
                 raise
@@ -251,21 +247,20 @@ class Plugin(indigo.PluginBase):
     # pylint: disable=unused-argument
     def on_mqtt_connect(self, client, userdata, flags, rc):
         try:
-            self.logger.debug(
-                u'Connected to MQTT server with result code ' + str(rc))
+            self.logger.debug(f'Connected to MQTT server with result code {rc}')
             if rc == 0:
                 self.mqtt_connected = True
                 self._register_ha_devices()
             if rc == 1:
-                self.logger.error(u'Error: Invalid Protocol Version.')
+                self.logger.error('Error: Invalid Protocol Version.')
             if rc == 2:
-                self.logger.error(u'Error: Invalid Client Identifier.')
+                self.logger.error('Error: Invalid Client Identifier.')
             if rc == 3:
-                self.logger.error(u'Error: Server Unavailable.')
+                self.logger.error('Error: Server Unavailable.')
             if rc == 4:
-                self.logger.error(u'Error: Bad Username or Password.')
+                self.logger.error('Error: Bad Username or Password.')
             if rc == 5:
-                self.logger.error(u'Error: Not Authorised.')
+                self.logger.error('Error: Not Authorised.')
         except Exception:  # pylint: disable=broad-except
             t, v, tb = sys.exc_info()
             self.logger.debug({t, v, tb})
@@ -273,7 +268,7 @@ class Plugin(indigo.PluginBase):
 
     def _disconnect_from_mqtt_broker(self):
         if self.mqtt_connected:
-            self.logger.debug(u'Disconnecting from MQTT Broker')
+            self.logger.debug('Disconnecting from MQTT Broker')
             for _, ha_device in self._ha_devices.items():
                 if ha_device.indigo_entity is not None \
                         and isinstance(ha_device, RegisterableDevice):
@@ -282,16 +277,14 @@ class Plugin(indigo.PluginBase):
             self.mqtt_client.loop_stop()
 
     def on_mqtt_disconnect(self):
-        self.logger.warn(u'Disconnected from MQTT Broker.')
+        self.logger.warn('Disconnected from MQTT Broker.')
         self.mqtt_connected = False
 
     # The callback for when a PUBLISH message is received from the server.
     # pylint: disable=unused-argument
     def on_mqtt_message(self, client, userdata, msg):
         try:
-            self.logger.warn(
-                u'Unhandled Message recd: ' + msg.topic + " | " + str(
-                    msg.payload))
+            self.logger.warn(f'Unhandled Message recd: {msg.topic} | {msg.payload}')
         except Exception:  # pylint: disable=broad-except
             t, v, tb = sys.exc_info()
             self.handle_exception(t, v, tb)
@@ -335,18 +328,11 @@ class Plugin(indigo.PluginBase):
 
     def _send_event(self, event, payload):
         try:
-            self.logger.debug(u'Sending event {} to {} with payload {}'
-                              .format(event, self.config.hass_url,
-                                      json.dumps(payload)))
-            url = '{}/api/events/{}'.format(self.config.hass_url, event)
-            resp = self.config.hass_event_session.post(
-                url,
-                json=payload,
-                verify=self.config.hass_ssl_validate)
+            self.logger.debug(f'Sending event {event} to {self.config.hass_url} with payload {json.dumps(payload)}')
+            url = f'{self.config.hass_url}/api/events/{event}'
+            resp = self.config.hass_event_session.post(url, json=payload, verify=self.config.hass_ssl_validate)
             if resp.status_code is not requests.codes['OK']:
-                self.logger.warn(
-                    u'Unable to send event to home assitant, recieved {}'
-                    .format(resp.text))
+                self.logger.warn(f'Unable to send event to home assistant, received {resp.text}')
         except Exception as e:  # pylint: disable=unused-variable
             t, v, tb = sys.exc_info()
             self.handle_exception(t, v, tb)
@@ -369,8 +355,7 @@ class Plugin(indigo.PluginBase):
             if str(indigo_device.id) in self.pluginPrefs['devices']:
 
                 # Get the ha devices for each indigo device
-                hass_devices = DeviceGeneratorFactory.generate(
-                    indigo_device, self.config, self.logger)
+                hass_devices = DeviceGeneratorFactory.generate(indigo_device, self.config, self.logger)
 
                 # Go through HA devices
                 for _, ha_device in hass_devices.items():
@@ -413,8 +398,7 @@ class Plugin(indigo.PluginBase):
             if str(indigo_variable.id) in self.pluginPrefs['variables']:
 
                 # Get the ha devices for each indigo variable
-                hass_devices = VariableGeneratorFactory.generate(
-                    indigo_variable, self.config, self.logger)
+                hass_devices = VariableGeneratorFactory.generate(indigo_variable, self.config, self.logger)
 
                 # Go through HA devices
                 for _, ha_device in hass_devices.items():
@@ -468,32 +452,28 @@ class Plugin(indigo.PluginBase):
 
     def _refresh_ha_info(self):
         try:
-            self.logger.debug(
-                u'Refreshing mappings of Indigo devices to HA devices.')
-            url = '{}/api/states'.format(self.config.hass_url)
+            self.logger.threaddebug('Refreshing mappings of Indigo devices to HA devices.')
+            url = f'{self.config.hass_url}/api/states'
 
             headers = self.config.hass_session_headers
             headers['Content-Type'] = 'application/json'
-            resp = requests.request('GET', url,
-                                    verify=self.config.hass_ssl_validate,
-                                    headers=headers)
+            resp = requests.request('GET', url, verify=self.config.hass_ssl_validate, headers=headers)
             if resp.status_code is not requests.codes['OK']:
-                self.logger.warn(u'Unable to get mapping of indigo devices to '
-                                 u'home assitant entities, recieved {}'.format(resp.text))
+                self.logger.warn(f'Unable to get mapping of indigo devices to home assistant entities, received {resp.text}')
 
             ha_entities = resp.json()
             for ha_entity in ha_entities:
-                if u'attributes' in ha_entity \
-                   and u'indigo_id' in ha_entity[u'attributes'] \
-                   and str(ha_entity[u'attributes'][u'indigo_id']) \
+                if 'attributes' in ha_entity \
+                   and 'indigo_id' in ha_entity['attributes'] \
+                   and str(ha_entity['attributes']['indigo_id']) \
                         in self._ha_devices:
                     self._ha_devices[
-                        str(ha_entity[u'attributes'][u'indigo_id'])
+                        str(ha_entity['attributes']['indigo_id'])
                     ].ha_entity_id = \
-                    ha_entity[u'entity_id']
+                    ha_entity['entity_id']
                     self._ha_devices[
                         str(
-                            ha_entity[u'attributes'][u'indigo_id']
+                            ha_entity['attributes']['indigo_id']
                         )].ha_friendly_name = ha_entity[u'attributes'][u'friendly_name']
 
         except Exception as e:  # pylint: disable=unused-variable
@@ -506,18 +486,13 @@ class Plugin(indigo.PluginBase):
                 and (ha_device.indigo_entity.id in indigo.devices
                      or ha_device.indigo_entity.id in indigo.variables) \
                 and isinstance(ha_device, RegisterableDevice):
-            self.logger.debug(
-                u'Attempting to register \"{}\" for indigo entity {} id:{}'
-                .format(ha_device.name,
-                        ha_device.indigo_entity.name,
-                        ha_device.indigo_entity.id))
+            self.logger.debug(f'Attempting to register \"{ha_device.name}\" for indigo entity {ha_device.indigo_entity.name} id:{ha_device.indigo_entity.id}')
             ha_device.register()
 
     def _unregister_ha_device(self, ha_device):
         if ha_device.indigo_entity is not None \
                 and isinstance(ha_device, RegisterableDevice):
-            self.logger.debug(
-                u'Attempting to unregister \"{}\"'.format(ha_device.name))
+            self.logger.debug(f'Attempting to unregister \"{ha_device.name}\"')
             ha_device.cleanup()
 
     def _register_ha_devices(self):

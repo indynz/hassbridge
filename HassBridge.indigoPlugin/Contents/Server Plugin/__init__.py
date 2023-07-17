@@ -96,13 +96,14 @@ class Config(object):
         try:
 
             if os.path.isfile(self.customize_file_path):
-                stream = file(self.customize_file_path, 'r')
-                customizations = yaml.full_load(stream)
+ #               stream = file(self.customize_file_path, 'r')
+ #               customizations = yaml.full_load(stream)
+                with open(self.customize_file_path, 'r') as stream:
+                    customizations = yaml.safe_load(stream)
                 if customizations is None:
                     customizations = {}
             else:
-                self.logger.error(u"Unable to find customization file {}"
-                                  .format(self.customize_file_path))
+                self.logger.error(f"Unable to find customization file {self.customize_file_path}")
             return customizations
         except Exception:
             execp_type, execpt_value, except_traceback = sys.exc_info()
@@ -111,7 +112,7 @@ class Config(object):
 
     # pylint: disable=unused-argument
     def __handle_exception(self, exc_type, exc_value, exc_traceback):
-        self.logger.error(u'Exception trapped:' + str(exc_value))
+        self.logger.error(f'Exception trapped:{exc_value}')
 
     def get_overrides_for_device(self, dev):
         overrides = {}
