@@ -111,7 +111,7 @@ class Config(object):
 
     # pylint: disable=unused-argument
     def __handle_exception(self, exc_type, exc_value, exc_traceback):
-        self.logger.error(u'Exception trapped:' + unicode(exc_value))
+        self.logger.error(u'Exception trapped:' + str(exc_value))
 
     def get_overrides_for_device(self, dev):
         overrides = {}
