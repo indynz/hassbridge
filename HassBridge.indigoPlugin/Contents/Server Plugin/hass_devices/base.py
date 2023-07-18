@@ -462,10 +462,7 @@ class BaseStatefulHADevice(BaseStatefulHAEntity, UpdatableDevice):
             retain=self.json_attribute_topic_retain)
 
     def cleanup(self):
-        self.logger.debug(
-            u'Cleaning up json_attribute_topic mqtt topics for device '
-            u'{d[name]}:{d[id]} on topic {d[json_attribute_topic]}'
-            .format(d=self))
+        self.logger.debug(f'Cleaning up json_attribute_topic mqtt topics for device {self["name"]}:{self["id"]} on topic {self["json_attribute_topic"]}')
         get_mqtt_client().publish(
             topic=self.json_attribute_topic,
             payload='',
@@ -507,9 +504,7 @@ class BaseCommandableHADevice(BaseStatefulHADevice):
     def register(self):
         super(BaseCommandableHADevice, self).register()
         # register command topic
-        self.logger.debug(
-            u"Subscribing {} with id {}:{} to command topic {}"
-            .format(self.hass_type, self.name, self.id, self.command_topic))
+        self.logger.debug(f"Subscribing {self.hass_type} with id {self.name}:{self.id} to command topic {self.command_topic}")
         get_mqtt_client().subscribe(self.command_topic)
         get_mqtt_client().message_callback_add(
             self.command_topic,
@@ -517,21 +512,14 @@ class BaseCommandableHADevice(BaseStatefulHADevice):
 
     # pylint: disable=unused-argument
     def on_command_message(self, client, userdata, msg):
-        self.logger.debug(
-            u"Command message {} recieved on {}".format(msg.payload,
-                                                        msg.topic))
-        if msg.payload == self.payload_on and \
-                not indigo.devices[self.id].onState:
+        self.logger.debug(f"Command message {msg.payload} received on {msg.topic}")
+        if msg.payload.decode() == self.payload_on and not indigo.devices[self.id].onState:
             indigo.device.turnOn(self.id)
-        elif msg.payload == self.payload_off and \
-                indigo.devices[self.id].onState:
+        elif msg.payload.decode() == self.payload_off and indigo.devices[self.id].onState:
             indigo.device.turnOff(self.id)
 
     def cleanup(self):
-        self.logger.debug(
-            u'Cleaning up command_topic mqtt topics for device "'
-            u'{d[name]}:{d[id]} on topic {d[command_topic]}'
-            .format(d=self))
+        self.logger.debug(f'Cleaning up command_topic mqtt topics for device {self["name"]}:{self["id"]} on topic {self["command_topic"]}')
         get_mqtt_client().publish(
             topic=self.command_topic,
             payload='',

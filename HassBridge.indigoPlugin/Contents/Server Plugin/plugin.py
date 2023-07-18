@@ -20,17 +20,15 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-import imp
 import os
 import sys
+from importlib.machinery import SourceFileLoader
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'libs')))
 sys.path.insert(0, os.path.abspath(os.getcwd()))
 if __name__ == '__main__' and __package__ is None:
-    imp.load_source('hassbridge',
-                    os.path.normpath(os.path.join(os.getcwd(), '__init__.py')))
-    imp.load_source('hassbridge.plugin',
-                    os.path.normpath(os.path.join(os.getcwd(), 'plugin.py')))
+    SourceFileLoader('hassbridge', os.path.normpath(os.path.join(os.getcwd(), '__init__.py'))).load_module()
+    SourceFileLoader('hassbridge.plugin', os.path.normpath(os.path.join(os.getcwd(), 'plugin.py'))).load_module()
     __package__ = "hassbridge"  # pylint: disable=redefined-builtin
     __name__ = "hassbridge.plugin"  # pylint: disable=redefined-builtin
 

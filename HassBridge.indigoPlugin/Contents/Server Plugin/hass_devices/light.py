@@ -99,12 +99,7 @@ class Light(BaseCommandableHADevice):
     def register(self):
         super(Light, self).register()
         # register brightness command topic
-        self.logger.debug(
-            u'Subscribing {} with id {}:{} to brightness command topic {}'
-            .format(self.hass_type,
-                    self.name,
-                    self.id,
-                    self.brightness_command_topic))
+        self.logger.debug(f'Subscribing {self.hass_type} with id {self.name}:{self.id} to brightness command topic {self.brightness_command_topic}')
         get_mqtt_client().message_callback_add(
             self.brightness_command_topic,
             self.on_brightness_command_message)
@@ -113,15 +108,13 @@ class Light(BaseCommandableHADevice):
 
     # pylint: disable=unused-argument
     def on_brightness_command_message(self, client, userdata, msg):
-        self.logger.debug(u'Brightness Command message {} recieved on {}'
-                          .format(msg.payload, msg.topic))
+        self.logger.debug(f'Brightness Command message {msg.payload} received on {msg.topic}')
 
         if (int(msg.payload) and not indigo.devices[self.id].onState) or \
                 int(msg.payload) == 0:
             self._transition_from_dimmer = True
 
-        indigo.dimmer.setBrightness(self.id,
-                                    value=int(msg.payload))
+        indigo.dimmer.setBrightness(self.id, value=int(msg.payload))
 
     def on_command_message(self, client, userdata, msg):
         if self._transition_from_dimmer:

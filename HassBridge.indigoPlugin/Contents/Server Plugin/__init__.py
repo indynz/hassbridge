@@ -96,8 +96,6 @@ class Config(object):
         try:
 
             if os.path.isfile(self.customize_file_path):
- #               stream = file(self.customize_file_path, 'r')
- #               customizations = yaml.full_load(stream)
                 with open(self.customize_file_path, 'r') as stream:
                     customizations = yaml.safe_load(stream)
                 if customizations is None:

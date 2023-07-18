@@ -94,8 +94,7 @@ class Lock(BaseCommandableHADevice):
 
     def _send_state(self, dev):
         state = self.state_locked if dev.onState else self.state_unlocked
-        self.logger.debug(
-            u'Lock state set to {} for device {}'.format(state, dev.name))
+        self.logger.debug(f'Lock state set to {state} for device {dev.name}')
         get_mqtt_client().publish(
             topic=self.state_topic,
             payload=state,
@@ -103,12 +102,8 @@ class Lock(BaseCommandableHADevice):
             retain=self.state_topic_retain)
 
     def on_command_message(self, client, userdata, msg):
-        self.logger.debug(
-            u'Command message {} recieved on {}'
-            .format(msg.payload, msg.topic))
-        if msg.payload == self.payload_lock and \
-                not indigo.devices[self.id].onState:
+        self.logger.debug(f'Command message {msg.payload} received on {msg.topic}')
+        if msg.payload.decode() == self.payload_lock and not indigo.devices[self.id].onState:
             indigo.device.turnOn(self.id)
-        elif msg.payload == self.payload_unlock and \
-                indigo.devices[self.id].onState:
+        elif msg.payload.decode() == self.payload_unlock and indigo.devices[self.id].onState:
             indigo.device.turnOff(self.id)

@@ -113,7 +113,7 @@ class InsteonKeypadButtonLight(Switch, InsteonKeypadButtonCommandProcessor):
     # pylint: disable=unused-argument
     def on_command_message(self, client, userdata, msg):
         self.logger.debug(
-            u'Command message {} recieved on {}'.format(msg.payload, msg.topic))
+            u'Command message {} received on {}'.format(msg.payload, msg.topic))
         if msg.payload == self.payload_on \
                 and not \
                 indigo.devices[self.parent_id].ledStates[self.button - 1]:
@@ -316,13 +316,7 @@ class InsteonLedBacklight(Light, InsteonGeneralCommandProcessor):
     def register(self):
         BaseCommandableHADevice.register(self)
         # register brightness command topic
-        self.logger.debug(
-            u'Subscribing {} with id {}:{} to brightness command topic {}'
-            .format(
-                self.hass_type,
-                self.name,
-                self.id,
-                self.brightness_command_topic))
+        self.logger.debug(f'Subscribing {self.hass_type} with id {self.name}:{self.id} to brightness command topic {self.brightness_command_topic}')
         get_mqtt_client().message_callback_add(
             self.brightness_command_topic,
             self.on_brightness_command_message)
@@ -339,9 +333,7 @@ class InsteonLedBacklight(Light, InsteonGeneralCommandProcessor):
 
     # pylint: disable=unused-argument
     def _send_brightness_state(self, dev):
-        self.logger.debug(u'Sending brightness state of {} to {}'
-                          .format(self.brightness_level,
-                                  self.brightness_state_topic))
+        self.logger.debug(f'Sending brightness state of {self.brightness_level} to {self.brightness_state_topic}')
         get_mqtt_client().publish(
             topic=self.brightness_state_topic,
             payload=str(self.brightness_level),
@@ -349,8 +341,7 @@ class InsteonLedBacklight(Light, InsteonGeneralCommandProcessor):
 
     # pylint: disable=unused-argument
     def on_brightness_command_message(self, client, userdata, msg):
-        self.logger.debug(u'Brightness Command message {} recieved on {}'
-                          .format(msg.payload, msg.topic))
+        self.logger.debug(f'Brightness Command message {msg.payload} received on {msg.topic}')
 
         if int(msg.payload) > 0:
             self._turn_on_backlight()
@@ -364,15 +355,13 @@ class InsteonLedBacklight(Light, InsteonGeneralCommandProcessor):
         self._send_brightness_state(self.indigo_entity)
 
     def on_command_message(self, client, userdata, msg):
-        self.logger.debug(
-            u"Command message {} recieved on {}".format(msg.payload,
-                                                        msg.topic))
-        if msg.payload == self.payload_on:
+        self.logger.debug(f"Command message {msg.payload} received on {msg.topic}")
+        if msg.payload.decode() == self.payload_on:
             self._turn_on_backlight()
             self.switch_state = self.payload_on
             self._set_backlight_brightness(self.brightness_level)
 
-        elif msg.payload == self.payload_off:
+        elif msg.payload.decode() == self.payload_off:
             self._turn_off_backlight()
             self.switch_state = self.payload_off
             self._set_backlight_brightness(0)
