@@ -100,7 +100,8 @@ class BaseHAEntity(Base, RegisterableDevice):
         self.ha_entity_id = None
         self.discovery_prefix = discovery_prefix
         self.config = {
-            self.CONFIG_NAME: self.name,
+            # self.CONFIG_NAME: self.name,
+            self.CONFIG_NAME: None,
             self.CONFIG_UNIQUE_ID: self.unique_id,
             self.CONFIG_QOS: self.qos
         }
