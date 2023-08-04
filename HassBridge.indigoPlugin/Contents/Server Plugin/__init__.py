@@ -86,7 +86,8 @@ class Config(object):
         self.create_battery_sensors = pluginPrefs.get("create_battery_sensors", False)
         self.create_insteon_led_backlight_lights = pluginPrefs.get('create_insteon_led_backlight_lights', False)
 
-        self.insteon_no_comm_minutes = int(pluginPrefs.get("insteon_battery_minutes_no_com", 1440))
+        if self.create_battery_sensors:
+            self.insteon_no_comm_minutes = int(pluginPrefs.get("insteon_battery_minutes_no_com", 1440))
 
         if self.use_customize_file:
             self.customizations = self.__read_customization_file()
